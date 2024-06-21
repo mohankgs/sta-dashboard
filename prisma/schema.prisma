@@ -1,0 +1,63 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider     = "mysql"
+  url          = env("DATABASE_URL")
+  relationMode = "prisma"
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model Attendance {
+  RegistrationID Int 
+  EventDate      DateTime  @db.Date
+  CheckInTime    DateTime  @db.Time(0)
+  CheckedInBy    String?   @db.VarChar(50)
+  CheckoutTime   DateTime? @db.Time(0)
+  CheckedOutBy   String?   @db.VarChar(50)
+  @@unique([RegistrationID, EventDate])
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model Crews {
+  CrewID   Int @id @default(autoincrement())
+  EventID  Int
+  CrewName String @db.VarChar(50)
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model EventRegistrations {
+  RegistrationID        Int @id @default(autoincrement())
+  RegisteredTimestamp   DateTime @db.Date
+  EventID               Int
+  RegisteredName        String   @db.VarChar(50)
+  DateofBirth           DateTime @db.Date
+  CurrentYearGrade      String   @db.VarChar(20)
+  ParentName            String   @db.VarChar(50)
+  PrimaryContactPhone   String   @db.VarChar(15)
+  SecondaryContactPhone String   @db.VarChar(15)
+  ContactEmail          String   @db.VarChar(50)
+  CityAndState          String   @db.VarChar(50)
+  ReferredBy            String   @db.VarChar(50)
+  Allergies             String   @db.VarChar(200)
+  SpecialNeeds          Boolean
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model Events {
+  EventID   Int @id @default(autoincrement())
+  EventName String   @db.VarChar(50)
+  StartDate DateTime @db.Date
+  EndDate   DateTime @db.Date
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model RegisteredCrews {
+  ID             Int @id @default(autoincrement())
+  CrewID         Int?
+  RegistrationID Int
+  CrewName       String? @db.VarChar(64)
+}

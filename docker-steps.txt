@@ -1,0 +1,4 @@
+docker image build -t sta-dashboard:latest .
+docker image tag sta-dashboard mohankgs/sta-dashboard
+docker login (optional)
+docker push mohankgs/sta-dashboard
