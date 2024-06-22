@@ -5,6 +5,7 @@ import EventsLayout from "@/components/EventsLayout";
 import { useState } from "react";
 import appContext from "@/context/appContext";
 import { formatDate } from "@/helpers/util";
+import _ from 'lodash';
 
 
 
@@ -42,31 +43,45 @@ export default function Home({registrations}) {
   );
 }
 
+function prepareForSerializatoin(obj) {
+  return obj.mapValues(obj, value => typeof value === 'undefined' ? null : value);
+}
+
 export async function getServerSideProps(){
   const response = await fetch("http://localhost:3000/api/registrations");
   const registrations = await response.json();
   const dateWithoutTime = new Date();
   dateWithoutTime.setHours(0,0,0,0);
   const dateString = formatDate(dateWithoutTime)+"T00:00:00.000Z";
-  for (let reg of registrations) {
-    // Get attendance details
-    const queryParams = "registrationID=" + reg.RegistrationID + "&eventDate=" + dateString;
-    const attendance = await fetch("http://localhost:3000/api/attendance?" + queryParams);
-    if(attendance){
-      const attendanceJson = await attendance.json();
-      reg.attendance = attendanceJson;
-    }
-    // Get Crew name
-    const queryParams2 = "registrationID=" + reg.RegistrationID;
-    const crew = await fetch("http://localhost:3000/api/crews?" + queryParams2);
-    if(crew){
-      const crewJson = await crew.json();
-      reg.crew = crewJson[0];
+  if (registrations && Array.isArray(registrations)) {
+    for (let reg of registrations) {
+      // Get attendance details
+      const queryParams = "registrationID=" + reg.RegistrationID + "&eventDate=" + dateString;
+      const attendance = await fetch("http://localhost:3000/api/attendance?" + queryParams);
+      if(attendance){
+        const attendanceJson = await attendance.json();
+        reg.attendance = attendanceJson;
+      }
+      // Get Crew name
+      const queryParams2 = "registrationID=" + reg.RegistrationID;
+      const crew = await fetch("http://localhost:3000/api/crews?" + queryParams2);
+      if (crew) {
+        try {
+          const crewJson = await crew.json();
+          
+            reg.crew = crewJson;
+          
+        }catch(error){
+          console.log(error);
+        }
+      }
+      
     }
   }
   return {
-    props : {
-      registrations : registrations
-    }
+      props : {
+        registrations : registrations
+      }
+    
   }
 }

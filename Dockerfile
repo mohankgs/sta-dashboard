@@ -1,5 +1,5 @@
 FROM node:21.7.1-alpine
-ARG PATH=$PATH:/sta-dashboard/node_modules/next/dist/bin
+ARG PATH=$PATH:/sta-dashboard/node_modules/next/dist/bin:/sta-dashboard/node_modules/.bin
 WORKDIR /sta-dashboard/
 COPY public/ /sta-dashboard/public
 COPY components/ /sta-dashboard/components
@@ -7,7 +7,7 @@ COPY config/ /sta-dashboard/config
 COPY helpers/ /sta-dashboard/helpers
 COPY context/ /sta-dashboard/context
 COPY pages/ /sta-dashboard/pages
-COPY prisma/ /sta-dashboard/pages
+COPY prisma/ /sta-dashboard/prisma
 COPY styles/ /sta-dashboard/styles
 COPY jsconfig.json /sta-dashboard/jsconfig.json
 COPY next.config.mjs /sta-dashboard/next.config.mjs
@@ -18,6 +18,8 @@ COPY .env /sta-dashboard/.env
 
 RUN npm install
 RUN next build
+RUN prisma generate
+
 
 CMD ["npm", "start"]
 

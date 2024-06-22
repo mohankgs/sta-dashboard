@@ -57,7 +57,7 @@ model Events {
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model RegisteredCrews {
   ID             Int @id @default(autoincrement())
-  CrewID         Int?
+  CrewID         Int? | null
   RegistrationID Int
   CrewName       String? @db.VarChar(64)
 }

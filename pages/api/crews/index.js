@@ -9,13 +9,17 @@ export default async function handler(req, res){
 
 const getCrewByRegID = async (req, res) => {
   try{
-    const crew = await prisma.RegisteredCrews.findMany({
+    const crew = await prisma.RegisteredCrews.findFirst({
       where: {
         RegistrationID : {
             equals : parseInt(req.query.registrationID),
           }
       },
+      select: {
+        CrewName: true,
+      },
     })
+    console.log(crew);
     return res.status(200).json(crew);
   }catch(error){
     console.log(error);
