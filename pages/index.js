@@ -5,8 +5,7 @@ import EventsLayout from "@/components/EventsLayout";
 import { useState } from "react";
 import appContext from "@/context/appContext";
 import { formatDate } from "@/helpers/util";
-import _ from 'lodash';
-
+import dayjs from "dayjs";
 
 
 export default function Home({registrations}) {
@@ -50,9 +49,15 @@ function prepareForSerializatoin(obj) {
 export async function getServerSideProps(){
   const response = await fetch("http://localhost:3000/api/registrations");
   const registrations = await response.json();
+  
+  
   const dateWithoutTime = new Date();
   dateWithoutTime.setHours(0,0,0,0);
-  const dateString = formatDate(dateWithoutTime)+"T00:00:00.000Z";
+  var today = dayjs(dateWithoutTime);
+  //today = today.subtract(1, 'day');
+  //const dateString = formatDate(dateWithoutTime)+"T00:00:00.000Z";
+  const dateString = today.format('YYYY-MM-DD');
+
   if (registrations && Array.isArray(registrations)) {
     for (let reg of registrations) {
       // Get attendance details

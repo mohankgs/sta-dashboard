@@ -8,10 +8,6 @@ export default async function handler(req, res) {
   switch (req.method) {
     case "GET":
       return await getAttendanceDetails(req, res);
-    case "POST":
-      return await checkIn2(req, res);
-    case "PATCH":
-      return await checkOut2(req, res);
   }
 }
 
@@ -20,7 +16,7 @@ const getAttendanceDetails = async (req, res) => {
   try {
     conn = await dbpool.getConnection();
     const query = "SELECT RegistrationID, EventDate,  CheckInTime, CheckedInBy, CheckoutTime, CheckedOutBy from Attendance "+
-      " where RegistrationID=" + parseInt(req.query.registrationID) + " and EventDate='" + req.query.eventDate + "'";
+      " where EventDate='" + req.query.eventDate + "'";
     const rows = await conn.query(query);
     //const res = await conn.query("INSERT INTO myTable value (?, ?)", [1, "mariadb"]);
     //console.log(res); // { affectedRows: 1, insertId: 1, warningStatus: 0 }
@@ -65,7 +61,7 @@ const checkIn2 = async (req, res) => {
   try {
     conn = await dbpool.getConnection();
     const result = await conn.query("INSERT INTO Attendance (RegistrationID, EventDate, CheckInTime, CheckedInBy) VALUES (?, ?, ?, ?)", 
-      [req.body.RegistrationID, req.body.EventDate, req.body.CheckInTime, req.body.CheckedInBy]);
+      [req.body.RegistrationID, req.body.EventDate, req.body.CheckInTime, req.body.CheckedInby]);
     console.log(result); 
     return res.status(201).json({ success: true });
   } catch (err) {
@@ -79,8 +75,8 @@ const checkOut2 = async (req, res) => {
   let conn;
   try {
     conn = await dbpool.getConnection();
-    const result = await conn.query("UPDATE Attendance set CheckoutTime = ?, CheckedOutBy=?, CheckedInBy=? Where RegistrationID = ? and EventDate = ?", 
-      [req.body.CheckoutTime, req.body.CheckedOutBy,req.body.CheckedOutBy, req.body.RegistrationID, req.body.EventDate]);
+    const result = await conn.query("UPDATE Attendance set CheckoutTime = ?, CheckedOutBy=? Where RegistrationID = ? and EventDate = ?", 
+      [req.body.CheckoutTime, req.body.CheckedOutBy,req.body.RegistrationID, req.body.EventDate]);
 
     console.log(result); 
     return res.status(201).json({ success: true });

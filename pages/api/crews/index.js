@@ -19,7 +19,6 @@ const getCrewByRegID = async (req, res) => {
         CrewName: true,
       },
     })
-    console.log(crew);
     return res.status(200).json(crew);
   }catch(error){
     console.log(error);

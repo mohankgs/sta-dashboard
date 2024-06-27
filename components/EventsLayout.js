@@ -115,11 +115,30 @@ export default function EventsLayout() {
     if(result){
       //TODO:Add alert message
       document.getElementsByClassName("checkOutCancel")[0].click();
-      const updatedRegistration = value.registrations.filter(reg => {
-        return reg.RegistrationID == checkOutUser.RegistrationID
+
+      const updatedCheckoutList = value.registrations.map(reg => {
+        let checkoutObj = {...reg};
+        if(checkoutObj.RegistrationID == checkOutUser.RegistrationID) {
+          if (checkoutObj.attendance?.length) {
+            checkoutObj.attendance[0].CheckoutTime = checkOutUser.CheckoutTime;
+            checkoutObj.attendance[0].CheckedOutBy = checkOutUser.CheckedOutBy;
+          } else {
+            /*
+            checkoutObj.attendance = [{
+              "RegistrationID":checkOutUser.RegistrationID,
+              "EventDate":checkOutUser.EventDate,
+              "CheckInTime":null,
+              "CheckedInBy":null,
+              "CheckoutTime":dayjs().format('HH:mm:ss'),
+              "CheckedOutBy":checkoutObj?.ParentName
+            }];
+            */
+          }
+        }
+        return checkoutObj;
       });
-      updatedRegistration.attendance = result;
-      value.setEventRegistrations(value.registrations);
+      // updatedRegistration.attendance = result;
+      value.setEventRegistrations(updatedCheckoutList);
 
     }
 

@@ -4,11 +4,11 @@ var mariadb = require('mariadb');
 // Create a connection pool
 var pool = 
   mariadb.createPool({
-    host : "192.168.1.24",
+    host : "192.168.4.44",
     database : "event_management",
     port : "3306",
-    user: "root",
-    password : "password123",
+    user: "vinojs",
+    password : "SQLPass2024!",
     connectionLimit : 5
   });
  

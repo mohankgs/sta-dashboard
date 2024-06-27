@@ -1,6 +1,7 @@
 import { formatDate } from "@/helpers/util";
 import { timeString } from "@/helpers/util";
 import { convert24to12 } from "@/helpers/util";
+import dayjs from "dayjs";
 
 export default function Event({setCheckInUser, setCheckOutUser, registration, index}) {
   {
@@ -21,32 +22,90 @@ export default function Event({setCheckInUser, setCheckOutUser, registration, in
      */
   }
 
-
-  const setCheckInDetails = async (reg) => {
+  const getDateString = () => {
     const dateWithoutTime = new Date();
     dateWithoutTime.setHours(0,0,0,0);
-    const dateString = formatDate(dateWithoutTime)+"T00:00:00.000Z";
-    setCheckInUser({
+    var today = dayjs(dateWithoutTime);
+    const dateString = today.format('YYYY-MM-DD');
+    return dateString;
+  }
+
+  const getTimeString = () => {
+    const dateWithoutTime = new Date();
+    dateWithoutTime.setHours(0,0,0,0);
+    var today = dayjs(dateWithoutTime);
+    const dateString = today.format('YYYY-MM-DD');
+    return dateString;
+  }
+
+
+
+  const setCheckInDetails = async (reg) => {
+    const checkinUser = {
       RegistrationID: reg.RegistrationID,
-      EventDate: dateString,
-      CheckInTime: new Date().toISOString(),
+      EventDate: getDateString(),
+      CheckInTime: dayjs().format('HH:mm:ss'),
       CheckedInBy: reg.ParentName,
-      CheckInTimeFormatted : convert24to12(timeString(new Date()))
-    })
+      CheckInTimeFormatted : dayjs().format('hh:mm:ss a')
+    };
+    setCheckInUser(checkinUser);
+
   }
 
   const setCheckOutDetails = async (reg) => {
-    const dateWithoutTime = new Date();
-    dateWithoutTime.setHours(0,0,0,0);
-    const dateString = formatDate(dateWithoutTime)+"T00:00:00.000Z";
-    setCheckOutUser({
+    const checkoutUser = {
       RegistrationID: reg.RegistrationID,
-      EventDate: dateString,
-      CheckoutTime: new Date().toISOString(),
+      EventDate: getDateString(),
+      CheckoutTime: dayjs().format('HH:mm:ss'),
       CheckedOutBy: reg.ParentName,
-      CheckOutTimeFormatted : convert24to12(timeString(new Date()))
-    })
+      CheckOutTimeFormatted : dayjs().format('hh:mm:ss a')
+    }
+    setCheckOutUser(checkoutUser)
 
+  }
+
+  const renderStatus2 = () => {
+    let checkOutTime;
+    if(registration.attendance && registration.attendance[0]){
+      checkOutTime = registration.attendance[0].CheckoutTime;
+    }
+
+    let checkInTime;
+    if(registration.attendance && registration.attendance[0]){
+      checkInTime = registration.attendance[0].CheckInTime;
+    }
+    let status = ''
+    if(checkOutTime){
+      status = "Checked Out: " + checkOutTime;
+      registration.Status = status;
+      return (
+        <div>
+          <small>
+          <p className="text-secondary">{registration.Status}</p>
+          </small>
+        </div>
+      )
+    }
+    if(checkInTime){
+      status = "Checked In: " + checkInTime;
+      registration.Status = status;
+      return (
+        <div>
+          <small>
+          <mark>{registration.Status}</mark>
+          <a href="#checkOutModal" onClick = {() => setCheckOutDetails(registration)}  className="edit" data-toggle="modal">
+            <p className="text-info">Check out</p></a>
+          </small>
+        </div> );
+    }
+    return (
+      <div>
+        <small>
+        <a href="#checkInModal" onClick = {() => setCheckInDetails(registration)} className="edit" data-toggle="modal">
+         <p className="text-primary">Check in</p></a>
+        </small>
+      </div>
+    )
   }
 
   const renderStatus = () => {
@@ -81,7 +140,7 @@ export default function Event({setCheckInUser, setCheckOutUser, registration, in
  
   return (
     <>
-      <tr>
+      <tr key={registration.RegistrationID}>
         <td>{index}</td>
         <td>{registration.RegisteredName}</td>
         <td>{registration.CurrentYearGrade}</td>
@@ -89,7 +148,7 @@ export default function Event({setCheckInUser, setCheckOutUser, registration, in
         <td>{registration.ParentName}</td>
         <td>{registration.PrimaryContactPhone}</td>
         <td>{registration.Allergies}</td>
-        <td>{renderStatus()}</td>
+        <td>{renderStatus2()}</td>
       </tr>
     </>
   )
