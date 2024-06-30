@@ -1,6 +1,4 @@
 import { prisma } from "@/config/db";
-import { timeString } from "@/helpers/util";
-import { convert24to12 } from "@/helpers/util";
 import { dbpool } from "@/config/db2";
 
 
@@ -66,7 +64,7 @@ const checkIn2 = async (req, res) => {
     conn = await dbpool.getConnection();
     const result = await conn.query("INSERT INTO Attendance (RegistrationID, EventDate, CheckInTime, CheckedInBy) VALUES (?, ?, ?, ?)", 
       [req.body.RegistrationID, req.body.EventDate, req.body.CheckInTime, req.body.CheckedInBy]);
-    console.log(result); 
+    //console.log(result); 
     return res.status(201).json({ success: true });
   } catch (err) {
     throw err;
